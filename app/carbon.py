@@ -21,19 +21,31 @@ def estimate_carbon(
     baseline_end: str,
     monitoring_start: str,
     monitoring_end: str,
+    forest_type_code: int = 400,
+    canopy_cover_pct: float = 60.0,
+    stand_age: float = 40.0,
+    basal_area_live: float = 80.0,
 ) -> dict:
     """
     Full carbon estimation pipeline for a given boundary and two time periods.
-
-    Returns a dict with area, NDVI values, biomass, carbon, CO2e, and uncertainty bands.
+    Uses ML model to predict biomass coefficient from forest attributes.
     """
+    from app.model import predict_biomass_coefficient
+
     area_ha = get_area_ha(boundary)
 
     baseline_ndvi = get_mean_ndvi(boundary, baseline_start, baseline_end)
     monitoring_ndvi = get_mean_ndvi(boundary, monitoring_start, monitoring_end)
     ndvi_change = monitoring_ndvi - baseline_ndvi
 
-    biomass_change = ndvi_change * BIOMASS_COEFFICIENT * area_ha
+    biomass_coefficient = predict_biomass_coefficient(
+        forest_type_code=forest_type_code,
+        canopy_cover_pct=canopy_cover_pct,
+        stand_age=stand_age,
+        basal_area_live=basal_area_live,
+    )
+
+    biomass_change = ndvi_change * biomass_coefficient * area_ha
     carbon = biomass_change * CARBON_FRACTION
     co2e = carbon * CO2_CONVERSION
     co2e_low = co2e * (1 - UNCERTAINTY)
@@ -44,6 +56,7 @@ def estimate_carbon(
         "baseline_ndvi": round(baseline_ndvi, 4),
         "monitoring_ndvi": round(monitoring_ndvi, 4),
         "ndvi_change": round(ndvi_change, 4),
+        "biomass_coefficient_used": round(biomass_coefficient, 2),
         "biomass_change_tonnes": round(biomass_change, 1),
         "carbon_sequestered_tonnes_c": round(carbon, 1),
         "co2e_tonnes": round(co2e, 1),
