@@ -1,6 +1,7 @@
 // src/components/ForestForm.jsx
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import axios from "axios"
+import { MapContainer, TileLayer, Rectangle, useMap } from "react-leaflet"
 
 const API_BASE = "http://localhost:8000"
 
@@ -23,7 +24,7 @@ const defaultForm = {
 function Field({ label, name, value, onChange, type = "text", step }) {
   return (
     <div>
-      <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">
+      <label className="block text-xs font-semibold text-forest-100 mb-1 uppercase tracking-wide">
         {label}
       </label>
       <input
@@ -32,13 +33,70 @@ function Field({ label, name, value, onChange, type = "text", step }) {
         value={value}
         onChange={onChange}
         step={step}
-        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-forest-500 bg-white"
+        className="w-full px-3 py-2 input-dark rounded-lg text-sm"
       />
     </div>
   )
 }
 
-export default function ForestForm({ setResults, setLoading, setError, loading }) {
+// Re-centres the map whenever bounds change
+function FitBounds({ bounds }) {
+  const map = useMap()
+  useEffect(() => {
+    map.fitBounds(bounds, { padding: [20, 20] })
+  }, [bounds, map])
+  return null
+}
+
+function BboxMap({ minLon, minLat, maxLon, maxLat }) {
+  const isValid =
+    !isNaN(minLon) && !isNaN(minLat) &&
+    !isNaN(maxLon) && !isNaN(maxLat) &&
+    maxLat > minLat && maxLon > minLon
+
+  if (!isValid) {
+    return (
+      <div className="h-40 glass rounded-xl flex items-center justify-center">
+        <p className="text-xs text-forest-300">Enter valid coordinates to preview</p>
+      </div>
+    )
+  }
+
+  // react-leaflet uses [lat, lon] order
+  const bounds = [
+    [minLat, minLon],
+    [maxLat, maxLon],
+  ]
+
+  return (
+    <div className="h-48 rounded-xl overflow-hidden border border-forest-700/40">
+      <MapContainer
+        bounds={bounds}
+        scrollWheelZoom={false}
+        style={{ height: "100%", width: "100%", background: "#0d2e1c" }}
+        zoomControl={false}
+        attributionControl={false}
+      >
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/dark_matter/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
+        />
+        <Rectangle
+          bounds={bounds}
+          pathOptions={{
+            color: "#2d8653",
+            fillColor: "#1a5c38",
+            fillOpacity: 0.25,
+            weight: 2,
+          }}
+        />
+        <FitBounds bounds={bounds} />
+      </MapContainer>
+    </div>
+  )
+}
+
+export default function ForestForm({ setResults, setFormParams, setLoading, setError, loading }) {
   const [form, setForm] = useState(defaultForm)
 
   const handleChange = (e) => {
@@ -56,6 +114,7 @@ export default function ForestForm({ setResults, setLoading, setError, loading }
     try {
       const { data } = await axios.post(`${API_BASE}/estimate`, form)
       setResults(data)
+      setFormParams(form)
     } catch (err) {
       setError(
         err.response?.data?.detail || "Failed to connect to the API. Is the backend running?"
@@ -83,69 +142,70 @@ export default function ForestForm({ setResults, setLoading, setError, loading }
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
+    <div className="glass-dark rounded-2xl p-6 space-y-5">
       <div>
-        <h2 className="text-lg font-bold text-forest-700">Project Parameters</h2>
-        <p className="text-xs text-gray-400 mt-0.5">Configure your forest analysis</p>
+        <h2 className="text-base font-bold text-white">Project Parameters</h2>
+        <p className="text-xs text-forest-300 mt-0.5">Configure your forest analysis</p>
       </div>
 
-      {/* Project name */}
       <Field label="Project Name" name="project_name" value={form.project_name} onChange={handleChange} />
 
-      {/* Bounding box */}
+      {/* Bounding Box */}
       <div>
-        <p className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">
-          Bounding Box
-        </p>
+        <p className="text-xs font-semibold text-forest-100 mb-2 uppercase tracking-wide">Bounding Box</p>
         <div className="grid grid-cols-2 gap-2">
           <Field label="Min Longitude" name="min_lon" value={form.min_lon} onChange={handleChange} type="number" step="0.01" />
           <Field label="Min Latitude" name="min_lat" value={form.min_lat} onChange={handleChange} type="number" step="0.01" />
           <Field label="Max Longitude" name="max_lon" value={form.max_lon} onChange={handleChange} type="number" step="0.01" />
           <Field label="Max Latitude" name="max_lat" value={form.max_lat} onChange={handleChange} type="number" step="0.01" />
         </div>
+        <div className="mt-3">
+          <p className="text-xs font-semibold text-forest-100 mb-2 uppercase tracking-wide">Region Preview</p>
+          <BboxMap
+            minLon={form.min_lon}
+            minLat={form.min_lat}
+            maxLon={form.max_lon}
+            maxLat={form.max_lat}
+          />
+        </div>
       </div>
 
-      {/* Dates */}
+      {/* Baseline Period */}
       <div>
-        <p className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">
-          Baseline Period
-        </p>
+        <p className="text-xs font-semibold text-forest-100 mb-2 uppercase tracking-wide">Baseline Period</p>
         <div className="grid grid-cols-2 gap-2">
           <Field label="Start" name="baseline_start" value={form.baseline_start} onChange={handleChange} />
           <Field label="End" name="baseline_end" value={form.baseline_end} onChange={handleChange} />
         </div>
       </div>
 
+      {/* Monitoring Period */}
       <div>
-        <p className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">
-          Monitoring Period
-        </p>
+        <p className="text-xs font-semibold text-forest-100 mb-2 uppercase tracking-wide">Monitoring Period</p>
         <div className="grid grid-cols-2 gap-2">
           <Field label="Start" name="monitoring_start" value={form.monitoring_start} onChange={handleChange} />
           <Field label="End" name="monitoring_end" value={form.monitoring_end} onChange={handleChange} />
         </div>
       </div>
 
-      {/* Forest attributes */}
+      {/* Forest Attributes */}
       <div>
-        <p className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">
-          Forest Attributes
-        </p>
+        <p className="text-xs font-semibold text-forest-100 mb-2 uppercase tracking-wide">Forest Attributes</p>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">
+            <label className="block text-xs font-semibold text-forest-100 mb-1 uppercase tracking-wide">
               Forest Type
             </label>
             <select
               name="forest_type_code"
               value={form.forest_type_code}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-forest-500 bg-white"
+              className="w-full px-3 py-2 input-dark rounded-lg text-sm"
             >
-              <option value={100}>Pine</option>
-              <option value={200}>Spruce/Fir</option>
-              <option value={400}>Oak/Hardwood</option>
-              <option value={500}>Mixed Forest</option>
+              <option value={100} className="bg-forest-900">Pine</option>
+              <option value={200} className="bg-forest-900">Spruce/Fir</option>
+              <option value={400} className="bg-forest-900">Oak/Hardwood</option>
+              <option value={500} className="bg-forest-900">Mixed Forest</option>
             </select>
           </div>
           <Field label="Canopy Cover %" name="canopy_cover_pct" value={form.canopy_cover_pct} onChange={handleChange} type="number" />
@@ -154,20 +214,20 @@ export default function ForestForm({ setResults, setLoading, setError, loading }
         </div>
       </div>
 
-      {/* Buttons */}
+      {/* Action buttons */}
       <div className="flex gap-2 pt-2">
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="flex-1 bg-forest-700 hover:bg-forest-500 text-white font-semibold py-2.5 rounded-xl text-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 gradient-carbon hover:opacity-90 text-white font-semibold py-2.5 rounded-xl text-sm transition-all duration-200 shadow-lg shadow-forest-950/50 disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {loading ? "Analyzing..." : "🛰 Analyze"}
+          {loading ? "Analyzing..." : "Analyze"}
         </button>
         <button
           onClick={handleDownload}
-          className="px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 rounded-xl text-sm transition"
+          className="px-4 glass hover:bg-white/10 text-forest-300 font-semibold py-2.5 rounded-xl text-sm transition-all duration-200"
         >
-          📄 PDF
+          PDF
         </button>
       </div>
     </div>

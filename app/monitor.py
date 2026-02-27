@@ -13,7 +13,8 @@ import json
 import logging
 from datetime import datetime, timedelta, timezone
 from typing import Optional
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 from app.config import (
     NDVI_ANOMALY_THRESHOLD,
@@ -104,7 +105,7 @@ def classify_anomaly(ndvi_current: float, ndvi_baseline: float) -> Optional[dict
 def generate_alert_summary(project: dict, anomaly: dict, ndvi_current: float, ndvi_baseline: float) -> str:
     """Calls Gemini Flash to produce a human-readable alert summary."""
     try:
-        model = genai.GenerativeModel(GEMINI_MODEL)
+        client = genai.Client()
         prompt = f"""
 You are an AI carbon credit verification assistant analyzing satellite NDVI data.
 
@@ -122,7 +123,7 @@ Write a concise (2-3 sentence) alert summary for a carbon credit verifier.
 Include: what happened, likely cause, and recommended action.
 Be factual and specific. No markdown.
 """.strip()
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(model=GEMINI_MODEL, contents=prompt)
         return response.text.strip()
     except Exception as e:
         logger.warning(f"Gemini summary failed: {e}")

@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Blue Ridge Test Forest",
+    "description": "Test project in Virginia",
+    "bbox": [
+      -80.1,
+      37.2,
+      -79.8,
+      37.5
+    ],
+    "forest_type_code": 220,
+    "canopy_cover_pct": 65.0,
+    "stand_age": 45,
+    "basal_area_live": 28.0,
+    "id": "f48f240f"
+  }
+]

@@ -1,3 +1,70 @@
+@import "leaflet/dist/leaflet.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ─── Global resets ───────────────────────────────────────────── */
+@layer base {
+  html, body, #root {
+    @apply h-full;
+  }
+
+  #root {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-forest-800 rounded-full;
+  }
+
+  /* Fix: Tailwind preflight resets img max-width which breaks Leaflet tile rendering */
+  .leaflet-container img {
+    max-width: none !important;
+  }
+
+  /* Ensure Leaflet container fills its parent */
+  .leaflet-container {
+    height: 100%;
+    width: 100%;
+  }
+}
+
+/* ─── Glassmorphism utility classes ───────────────────────────── */
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .glass-dark {
+    background: rgba(13, 46, 28, 0.70);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(45, 134, 83, 0.25);
+  }
+
+  /* Form inputs — more opaque so text is readable on dark backgrounds */
+  .input-dark {
+    background: rgba(7, 24, 16, 0.80);
+    border: 1px solid rgba(45, 134, 83, 0.30);
+    color: #e8f5ee;
+  }
+
+  .input-dark:focus {
+    outline: none;
+    border-color: #2d8653;
+    box-shadow: 0 0 0 2px rgba(45, 134, 83, 0.30);
+  }
+
+  .gradient-carbon {
+    background: linear-gradient(135deg, #1a5c38 0%, #2d8653 60%, #12401f 100%);
+  }
+}
