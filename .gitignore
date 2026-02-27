@@ -1,6 +1,16 @@
+# Virtual environment
 venv/
+
+# Data files - too large for git
+data/fia_raw/
+data/model/
+
+# Python cache
 __pycache__/
 *.pyc
-.env
-*.pdf
+*.pyo
+.pytest_cache/
+
+# OS files
+.DS_Store
 carbontrust_report.pdf
