@@ -13,4 +13,6 @@ __pycache__/
 
 # OS files
 .DS_Store
-carbontrust_report.pdf
+
+# PDF outputs
+*.pdf
