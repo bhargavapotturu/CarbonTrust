@@ -80,9 +80,9 @@ def _metric_table(results: dict) -> Table:
         ["NDVI Change", f"{results['ndvi_change']:+.4f}", "index"],
         ["Biomass Change", f"{results['biomass_change_tonnes']:,.1f}", "tonnes"],
         ["Carbon Sequestered", f"{results['carbon_sequestered_tonnes_c']:,.1f}", "tonnes C"],
-        ["CO₂e Sequestered", f"{results['co2e_tonnes']:,.1f}", "tonnes CO₂e"],
-        ["Uncertainty Low (−20%)", f"{results['co2e_low']:,.1f}", "tonnes CO₂e"],
-        ["Uncertainty High (+20%)", f"{results['co2e_high']:,.1f}", "tonnes CO₂e"],
+        ["CO2e Sequestered", f"{results['co2e_tonnes']:,.1f}", "tonnes CO2e"],
+        ["Uncertainty Low (−20%)", f"{results['co2e_low']:,.1f}", "tonnes CO2e"],
+        ["Uncertainty High (+20%)", f"{results['co2e_high']:,.1f}", "tonnes CO2e"],
     ]
 
     col_widths = [7.5 * cm, 5 * cm, 4.5 * cm]
@@ -121,6 +121,7 @@ def generate_report(
     results: dict,
     generated_at: str,
     run_hash: str,
+    biomass_coefficient: float = 53.0,
 ) -> str:
     """
     Generate a PDF report and write it to a temp file.
@@ -170,13 +171,14 @@ def generate_report(
     story.append(Paragraph(
         "Vegetation change is measured using the Normalized Difference Vegetation Index (NDVI) "
         "derived from Sentinel-2 Surface Reflectance imagery. Biomass change is estimated using "
-        "a scaling coefficient of 53.0 t/ha per NDVI unit, consistent with temperate forest "
-        "literature. Carbon is calculated using the IPCC 2006 carbon fraction of 0.47, and "
-        "converted to CO₂ equivalent using the molecular weight ratio of 3.67.",
+        f"a scaling coefficient of {biomass_coefficient} t/ha per NDVI unit, predicted by a "
+        "Gradient Boosting model trained on USFS FIA forest inventory data. Carbon is calculated "
+        "using the IPCC 2006 carbon fraction of 0.47, and converted to CO2e using the molecular "
+        "weight ratio of 3.67.",
         body_style
     ))
     story.append(Paragraph(
-        "Uncertainty bands of ±20% are applied to the final CO₂e estimate in accordance "
+        "Uncertainty bands of +-20% are applied to the final CO2e estimate in accordance "
         "with Tier 1 IPCC guidelines for forestry carbon accounting.",
         body_style
     ))

@@ -134,6 +134,7 @@ def report(req: CarbonEstimateRequest):
             results=results,
             generated_at=generated_at,
             run_hash=run_hash,
+            biomass_coefficient=results.get("biomass_coefficient_used", 53.0),
         )
 
         return FileResponse(
