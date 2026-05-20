@@ -31,7 +31,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173", "http://localhost:8080", "http://127.0.0.1:8080", "null"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -63,6 +63,7 @@ class CarbonEstimateResponse(BaseModel):
     co2e_low: float
     co2e_high: float
     uncertainty_pct: int
+    biomass_coefficient_used: float
     methodology: str
     generated_at: str
     run_hash: str

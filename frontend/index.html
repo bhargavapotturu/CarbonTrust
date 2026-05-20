@@ -1,13 +1,1216 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=1320"/>
+<title>CarbonTrust — Satellite Carbon MRV</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+:root {
+  --bg: oklch(0.145 0.006 240);
+  --bg-elev: oklch(0.175 0.007 240);
+  --bg-raised: oklch(0.205 0.008 240);
+  --bg-hover: oklch(0.225 0.009 240);
+  --bg-input: oklch(0.165 0.006 240);
+  --bg-sidebar: oklch(0.125 0.005 240);
+  --hairline: oklch(0.255 0.008 240);
+  --hairline-2: oklch(0.31 0.009 240);
+  --hairline-3: oklch(0.38 0.011 240);
+  --fg: oklch(0.97 0.003 240);
+  --fg-2: oklch(0.78 0.006 240);
+  --fg-3: oklch(0.6 0.008 240);
+  --fg-4: oklch(0.48 0.01 240);
+  --fg-5: oklch(0.36 0.011 240);
+  --accent: oklch(0.78 0.18 145);
+  --accent-deep: oklch(0.62 0.16 145);
+  --accent-soft: oklch(0.78 0.18 145 / 0.14);
+  --accent-line: oklch(0.78 0.18 145 / 0.35);
+  --pos: oklch(0.78 0.16 145);
+  --neg: oklch(0.7 0.2 25);
+  --warn: oklch(0.82 0.16 75);
+  --info: oklch(0.78 0.13 230);
+  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', monospace;
+  --r-sm: 4px; --r-md: 6px; --r-lg: 10px; --r-xl: 14px;
+  --row-h: 40px; --pad-x: 20px; --pad-y: 16px; --gap: 16px;
+}
+[data-density="dense"] { --row-h: 32px; --pad-x: 14px; --pad-y: 10px; --gap: 10px; }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #root { height: 100%; }
+body {
+  background: radial-gradient(1200px 600px at 80% -10%, oklch(0.78 0.18 145 / 0.04), transparent 60%), var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01","ss02","cv11";
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"] { -moz-appearance: textfield; }
+input[type="date"] { color-scheme: dark; }
+input[type="date"]::-webkit-calendar-picker-indicator { opacity: 0.3; filter: invert(0.5); }
+.tabular { font-variant-numeric: tabular-nums; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--hairline-2); border: 2px solid transparent; background-clip: content-box; border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background-color: var(--hairline-3); }
+
+.app { display: grid; grid-template-columns: 232px minmax(0,1fr); height: 100vh; min-width: 1200px; }
+.sidebar { border-right: 1px solid var(--hairline); background: var(--bg-sidebar); display: flex; flex-direction: column; overflow: hidden; }
+.main { display: flex; flex-direction: column; overflow: hidden; }
+.topbar { height: 52px; border-bottom: 1px solid var(--hairline); position: sticky; top: 0; z-index: 5; backdrop-filter: blur(8px); background: oklch(0.145 0.006 240 / 0.85); display: flex; align-items: center; padding: 0 24px; gap: 12px; flex-shrink: 0; }
+.content { flex: 1; overflow: auto; padding: 24px 28px 80px; }
+
+.sidebar-brand { padding: 14px 14px 12px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid var(--hairline); flex-shrink: 0; }
+.brand-mark { width: 22px; height: 22px; background: var(--accent); clip-path: polygon(50% 0%,100% 50%,50% 100%,0% 50%); flex-shrink: 0; }
+.brand-name { font-size: 13px; font-weight: 600; letter-spacing: -0.01em; color: var(--fg); }
+.brand-tag { font-family: var(--font-mono); font-size: 9px; color: var(--fg-4); letter-spacing: 0.08em; background: var(--bg-raised); padding: 1px 5px; border-radius: var(--r-sm); border: 1px solid var(--hairline); margin-left: auto; }
+
+.sidebar-nav { padding: 8px; flex: 1; overflow-y: auto; }
+.nav-section { margin-bottom: 4px; }
+.nav-label { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; color: var(--fg-5); text-transform: uppercase; padding: 8px 8px 4px; }
+.nav-item { display: flex; align-items: center; gap: 9px; height: 34px; padding: 0 10px; border-radius: var(--r-md); cursor: pointer; font-size: 13px; font-weight: 500; color: var(--fg-3); transition: color 0.15s, background 0.15s; user-select: none; }
+.nav-item:hover { background: var(--bg-hover); color: var(--fg-2); }
+.nav-item.active { background: var(--bg-raised); color: var(--fg); box-shadow: inset 2px 0 0 var(--accent); }
+.nav-icon { width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; opacity: 0.75; }
+.nav-badge { margin-left: auto; background: var(--neg); color: white; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 999px; font-family: var(--font-mono); }
+
+.sidebar-footer { border-top: 1px solid var(--hairline); padding: 12px 14px; flex-shrink: 0; }
+.status-row { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--fg-4); font-family: var(--font-mono); margin-bottom: 4px; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse-dot 2.5s ease-out infinite; flex-shrink: 0; }
+@keyframes pulse-dot {
+  0%   { box-shadow: 0 0 0 0 oklch(0.78 0.18 145 / 0.6); }
+  70%  { box-shadow: 0 0 0 6px oklch(0.78 0.18 145 / 0); }
+  100% { box-shadow: 0 0 0 0 oklch(0.78 0.18 145 / 0); }
+}
+.footer-meta { font-size: 10px; color: var(--fg-5); font-family: var(--font-mono); margin-bottom: 10px; }
+.avatar-row { display: flex; align-items: center; gap: 8px; }
+.avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--accent-deep); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: var(--fg); flex-shrink: 0; }
+.avatar-name { font-size: 12px; font-weight: 500; color: var(--fg-2); }
+.avatar-role { font-size: 10px; color: var(--fg-5); }
+
+.card { background: var(--bg-elev); border: 1px solid var(--hairline); border-radius: var(--r-lg); }
+.btn { height: 30px; padding: 0 12px; background: var(--bg-raised); border: 1px solid var(--hairline); border-radius: var(--r-md); font-size: 12px; font-weight: 500; color: var(--fg-2); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: background 0.15s, color 0.15s, border-color 0.15s; font-family: var(--font-sans); white-space: nowrap; }
+.btn:hover { background: var(--bg-hover); color: var(--fg); border-color: var(--hairline-2); }
+.btn:active { opacity: 0.8; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: oklch(0.12 0.005 240); font-weight: 600; }
+.btn.primary:hover { background: oklch(0.85 0.18 145); }
+.btn.ghost { background: transparent; border-color: transparent; }
+.btn.ghost:hover { background: var(--bg-hover); border-color: var(--hairline); }
+.btn.sm { height: 26px; padding: 0 9px; font-size: 11px; }
+.btn.danger { color: var(--neg); border-color: oklch(0.7 0.2 25 / 0.4); }
+.btn.danger:hover { background: oklch(0.7 0.2 25 / 0.1); }
+.btn:disabled { opacity: 0.4; pointer-events: none; }
+
+.pill { height: 22px; padding: 0 8px; border-radius: 999px; font-size: 11px; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-mono); white-space: nowrap; }
+.pill.pos { background: oklch(0.78 0.16 145 / 0.15); color: var(--pos); border: 1px solid oklch(0.78 0.16 145 / 0.3); }
+.pill.neg { background: oklch(0.7 0.2 25 / 0.15); color: var(--neg); border: 1px solid oklch(0.7 0.2 25 / 0.3); }
+.pill.warn { background: oklch(0.82 0.16 75 / 0.15); color: var(--warn); border: 1px solid oklch(0.82 0.16 75 / 0.3); }
+.pill.info { background: oklch(0.78 0.13 230 / 0.15); color: var(--info); border: 1px solid oklch(0.78 0.13 230 / 0.3); }
+.pill.ghost { background: var(--bg-raised); color: var(--fg-3); border: 1px solid var(--hairline); }
+
+.tbl { width: 100%; border-collapse: collapse; }
+.tbl th { font-size: 11px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; color: var(--fg-4); padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--hairline); }
+.tbl td { padding: 10px 12px; border-bottom: 1px solid var(--hairline); color: var(--fg-2); font-size: 13px; }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr:hover td { background: var(--bg-hover); }
+
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field-label { font-size: 11px; font-weight: 500; color: var(--fg-3); letter-spacing: 0.02em; }
+.field-input { height: var(--row-h); padding: 0 10px; background: var(--bg-input); border: 1px solid var(--hairline); border-radius: var(--r-md); font-size: 13px; font-family: var(--font-mono); color: var(--fg); outline: none; transition: border-color 0.15s, box-shadow 0.15s; width: 100%; }
+.field-input::placeholder { color: var(--fg-5); }
+.field-input:focus { border-color: var(--accent-line); box-shadow: 0 0 0 3px var(--accent-soft); }
+select.field-input { cursor: pointer; }
+select.field-input option { background: var(--bg-raised); color: var(--fg); }
+
+.progress-track { height: 3px; background: var(--bg-raised); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
+.hash-chip { font-family: var(--font-mono); font-size: 11px; background: var(--bg-raised); border: 1px solid var(--hairline); padding: 4px 10px; border-radius: var(--r-md); color: var(--fg-3); letter-spacing: 0.04em; word-break: break-all; }
+
+.tweaks-panel { position: fixed; bottom: 24px; right: 24px; width: 280px; background: oklch(0.92 0.003 240 / 0.94); backdrop-filter: blur(20px); border: 1px solid oklch(0.78 0.004 240 / 0.25); border-radius: var(--r-xl); box-shadow: 0 24px 64px rgba(0,0,0,0.45); z-index: 100; color: oklch(0.2 0.005 240); font-family: var(--font-sans); padding: 16px; }
+.tweaks-panel h3 { font-size: 12px; font-weight: 600; color: oklch(0.22 0.005 240); letter-spacing: 0.02em; }
+.tweaks-row { margin-bottom: 14px; }
+.tweaks-label { font-size: 11px; font-weight: 500; color: oklch(0.45 0.008 240); margin-bottom: 7px; }
+.tweaks-options { display: flex; gap: 6px; }
+.tweak-opt { height: 28px; padding: 0 10px; border-radius: var(--r-md); border: 1px solid oklch(0.72 0.005 240 / 0.4); background: transparent; font-size: 11px; font-weight: 500; cursor: pointer; color: oklch(0.35 0.006 240); font-family: var(--font-sans); transition: all 0.15s; }
+.tweak-opt:hover { background: oklch(0.85 0.003 240 / 0.5); }
+.tweak-opt.active { background: oklch(0.22 0.005 240); color: oklch(0.95 0.003 240); border-color: oklch(0.22 0.005 240); }
+
+.analyze-grid { display: grid; grid-template-columns: 420px minmax(0,1fr); gap: 24px; align-items: start; }
+.form-sticky { position: sticky; top: 76px; }
+.bbox-map { height: 96px; background: var(--bg-input); border: 1px solid var(--hairline); border-radius: var(--r-md); position: relative; overflow: hidden; margin-top: 8px; }
+.bbox-topo { position: absolute; inset: 0; opacity: 0.12; background-image: repeating-linear-gradient(0deg,transparent,transparent 11px,var(--accent) 11px,var(--accent) 12px),repeating-linear-gradient(90deg,transparent,transparent 17px,var(--fg-5) 17px,var(--fg-5) 18px); }
+.bbox-rect { position: absolute; border: 1.5px solid var(--accent); background: var(--accent-soft); }
+.bbox-corner { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.bbox-label { position: absolute; font-family: var(--font-mono); font-size: 9px; color: var(--accent); }
+
+.ndvi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; }
+.ndvi-panel { border-radius: var(--r-md); overflow: hidden; position: relative; }
+.ndvi-badge { position: absolute; top: 5px; left: 5px; font-size: 9px; font-weight: 600; font-family: var(--font-mono); background: oklch(0.1 0.005 240 / 0.78); color: var(--fg-2); padding: 2px 6px; border-radius: var(--r-sm); backdrop-filter: blur(4px); letter-spacing: 0.05em; text-transform: uppercase; }
+.ndvi-canvas { width: 100%; display: block; }
+.ndvi-legend { display: flex; align-items: center; gap: 8px; font-size: 10px; font-family: var(--font-mono); color: var(--fg-4); margin-top: 6px; }
+.legend-bar { flex: 1; height: 6px; border-radius: 3px; }
+
+.pipeline { display: flex; flex-direction: column; gap: 7px; margin-top: 18px; }
+.step { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--fg-5); }
+.step.active { color: var(--fg-2); }
+.step.done { color: var(--pos); }
+.step-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--fg-5); flex-shrink: 0; transition: background 0.3s; }
+.step.active .step-dot { background: var(--warn); box-shadow: 0 0 0 3px oklch(0.82 0.16 75 / 0.2); }
+.step.done .step-dot { background: var(--pos); }
+
+.hero-split { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.carbon-big { font-size: 52px; font-weight: 700; font-family: var(--font-mono); color: var(--accent); line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.carbon-unit { font-size: 13px; color: var(--fg-3); font-weight: 500; margin-top: 4px; }
+.unc-track { height: 8px; background: var(--bg-raised); border-radius: 4px; position: relative; margin: 14px 0 6px; }
+.unc-band { position: absolute; height: 100%; background: var(--accent-soft); border: 1px solid var(--accent-line); border-radius: 4px; }
+.unc-pip { position: absolute; width: 3px; height: 14px; background: var(--accent); border-radius: 2px; top: 50%; transform: translate(-50%,-50%); }
+.mini-stat-val { font-size: 15px; font-weight: 600; font-family: var(--font-mono); color: var(--fg); font-variant-numeric: tabular-nums; }
+.mini-stat-label { font-size: 10px; color: var(--fg-4); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+
+.ai-card { background: oklch(0.78 0.13 230 / 0.05); border: 1px solid oklch(0.78 0.13 230 / 0.18); border-radius: var(--r-lg); padding: 18px; }
+.ai-para { color: var(--fg-2); line-height: 1.75; font-size: 13px; margin-bottom: 12px; opacity: 0; transform: translateY(8px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.ai-para.vis { opacity: 1; transform: none; }
+.ai-para:last-child { margin-bottom: 0; }
+
+.detail-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--hairline); }
+.detail-cell { background: var(--bg-elev); padding: 14px 16px; }
+.detail-val { font-size: 17px; font-weight: 600; font-family: var(--font-mono); color: var(--fg); font-variant-numeric: tabular-nums; }
+.detail-label { font-size: 10px; color: var(--fg-4); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 3px; }
+
+.error-banner { background: oklch(0.7 0.2 25 / 0.1); border: 1px solid oklch(0.7 0.2 25 / 0.3); border-radius: var(--r-md); padding: 10px 14px; color: var(--neg); font-size: 12px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+.summary-strip { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--hairline); border-radius: var(--r-lg); overflow: hidden; margin-bottom: 20px; }
+.summary-cell { background: var(--bg-elev); padding: 12px 16px; cursor: pointer; transition: background 0.15s; user-select: none; }
+.summary-cell:hover { background: var(--bg-hover); }
+.summary-cell.active { box-shadow: inset 0 -2px 0 var(--accent); }
+.sum-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--fg-4); margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
+.sum-val { font-size: 22px; font-weight: 600; font-family: var(--font-mono); color: var(--fg); font-variant-numeric: tabular-nums; }
+
+.proj-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+.proj-card { background: var(--bg-elev); border: 1px solid var(--hairline); border-radius: var(--r-lg); overflow: hidden; }
+.proj-top-border { height: 3px; background: var(--hairline); }
+.proj-top-border.critical { background: var(--neg); }
+.proj-top-border.warning { background: var(--warn); }
+.proj-top-border.ok { background: var(--pos); }
+.proj-top-border.info { background: var(--info); }
+.proj-body { padding: 14px 16px; }
+.proj-name { font-size: 14px; font-weight: 600; color: var(--fg); margin-bottom: 2px; }
+.proj-desc { font-size: 12px; color: var(--fg-4); margin-bottom: 10px; }
+.attrs { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.proj-bbox { font-family: var(--font-mono); font-size: 10px; color: var(--fg-5); margin-bottom: 10px; }
+.alert-block { background: var(--bg-input); border-radius: var(--r-md); padding: 11px; margin-bottom: 10px; }
+.alert-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-top: 8px; }
+.asv { font-size: 13px; font-weight: 600; font-family: var(--font-mono); color: var(--fg); font-variant-numeric: tabular-nums; }
+.asl { font-size: 10px; color: var(--fg-4); margin-top: 1px; }
+.proj-footer { display: flex; align-items: center; justify-content: space-between; padding: 9px 14px; border-top: 1px solid var(--hairline); background: oklch(0.145 0.006 240 / 0.5); }
+.proj-time { font-size: 10px; color: var(--fg-5); font-family: var(--font-mono); }
+
+.register-form { background: oklch(0.78 0.18 145 / 0.04); border: 1px solid var(--accent-line); border-radius: var(--r-lg); padding: 18px; margin-bottom: 20px; overflow: hidden; }
+.collapsible { overflow: hidden; transition: max-height 0.35s ease, opacity 0.3s ease; }
+.collapsible.closed { max-height: 0; opacity: 0; pointer-events: none; }
+.collapsible.open { max-height: 2000px; opacity: 1; }
+
+.messages-area { flex: 1; overflow-y: auto; }
+.msg-row { display: flex; gap: 12px; margin-bottom: 22px; }
+.msg-av { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+.msg-av.user { background: var(--info); color: oklch(0.15 0.005 240); }
+.msg-av.ai { background: var(--accent-deep); color: var(--fg); }
+.msg-name { font-size: 11px; font-weight: 600; color: var(--fg-3); margin-bottom: 5px; letter-spacing: 0.02em; }
+.msg-text { font-size: 13px; color: var(--fg-2); line-height: 1.75; }
+.tool-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--bg-raised); border: 1px solid var(--hairline); border-radius: var(--r-md); padding: 3px 9px; font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); margin: 5px 5px 5px 0; }
+.tool-result { color: var(--pos); margin-left: 2px; }
+.stat-grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--hairline); border-radius: var(--r-md); overflow: hidden; margin-top: 12px; }
+.stat-cell { background: var(--bg-raised); padding: 10px 12px; }
+.stat-val { font-size: 14px; font-weight: 600; font-family: var(--font-mono); color: var(--fg); font-variant-numeric: tabular-nums; }
+.stat-label { font-size: 10px; color: var(--fg-4); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.input-bar { border-top: 1px solid var(--hairline); padding: 14px 24px; background: oklch(0.13 0.005 240 / 0.9); flex-shrink: 0; }
+.sug-chips { display: flex; gap: 7px; margin-bottom: 11px; flex-wrap: wrap; }
+.sug-chip { height: 26px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--hairline); background: var(--bg-raised); font-size: 11px; color: var(--fg-3); cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; transition: all 0.15s; font-family: var(--font-sans); }
+.sug-chip:hover { border-color: var(--accent-line); color: var(--accent); background: var(--accent-soft); }
+.input-row { display: flex; gap: 8px; align-items: center; }
+.chat-input { flex: 1; height: 38px; background: var(--bg-input); border: 1px solid var(--hairline); border-radius: var(--r-lg); padding: 0 14px; font-size: 13px; color: var(--fg); font-family: var(--font-sans); outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+.chat-input:focus { border-color: var(--accent-line); box-shadow: 0 0 0 3px var(--accent-soft); }
+.chat-input::placeholder { color: var(--fg-5); }
+.route-label { font-size: 10px; font-family: var(--font-mono); color: var(--fg-5); white-space: nowrap; }
+
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 60px 24px; text-align: center; }
+.empty-icon { width: 46px; height: 46px; background: var(--accent-soft); border-radius: var(--r-lg); display: flex; align-items: center; justify-content: center; }
+.empty-title { font-size: 15px; font-weight: 600; color: var(--fg-2); }
+.empty-desc { font-size: 13px; color: var(--fg-4); max-width: 300px; line-height: 1.65; }
+.efeat { font-size: 12px; color: var(--fg-4); display: flex; align-items: center; gap: 8px; }
+.efeat::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--accent); flex-shrink:0; }
+
+@keyframes fade-up { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+.fade-up { animation: fade-up 0.35s ease both; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 0.9s linear infinite; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+/* ── TWEAKS PANEL ─────────────────────────────────────────── */
+function TweaksPanel({ open, onClose, chartStyle, setChartStyle, density, setDensity, accentColor, setAccentColor }) {
+  const [pos, setPos] = React.useState({ x: 0, y: 0 });
+  const dragging = React.useRef(false);
+  const dragStart = React.useRef({});
+
+  React.useEffect(() => {
+    const accents = {
+      green: ['oklch(0.78 0.18 145)','oklch(0.62 0.16 145)','oklch(0.78 0.18 145 / 0.14)','oklch(0.78 0.18 145 / 0.35)'],
+      teal:  ['oklch(0.78 0.15 190)','oklch(0.62 0.13 190)','oklch(0.78 0.15 190 / 0.14)','oklch(0.78 0.15 190 / 0.35)'],
+      amber: ['oklch(0.82 0.16 75)' ,'oklch(0.65 0.14 75)' ,'oklch(0.82 0.16 75 / 0.14)' ,'oklch(0.82 0.16 75 / 0.35)' ],
+    };
+    const [a,b,c,d] = accents[accentColor] || accents.green;
+    const r = document.documentElement.style;
+    r.setProperty('--accent', a); r.setProperty('--accent-deep', b);
+    r.setProperty('--accent-soft', c); r.setProperty('--accent-line', d);
+    r.setProperty('--pos', a);
+  }, [accentColor]);
+
+  React.useEffect(() => { document.body.setAttribute('data-density', density); }, [density]);
+
+  React.useEffect(() => {
+    const h = (e) => { if ((e.key === 't' || e.key === 'T') && !e.ctrlKey && !e.metaKey) onClose(!open); };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  }, [open, onClose]);
+
+  const onMouseDown = (e) => {
+    dragging.current = true;
+    dragStart.current = { mx: e.clientX, my: e.clientY, px: pos.x, py: pos.y };
+    e.preventDefault();
+  };
+
+  React.useEffect(() => {
+    const mv = (e) => {
+      if (!dragging.current) return;
+      setPos({ x: dragStart.current.px + e.clientX - dragStart.current.mx, y: dragStart.current.py + e.clientY - dragStart.current.my });
+    };
+    const up = () => { dragging.current = false; };
+    window.addEventListener('mousemove', mv);
+    window.addEventListener('mouseup', up);
+    return () => { window.removeEventListener('mousemove', mv); window.removeEventListener('mouseup', up); };
+  }, []);
+
+  if (!open) return null;
+
+  return (
+    <div className="tweaks-panel" style={{ transform: `translate(${pos.x}px,${pos.y}px)` }}>
+      <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:14,cursor:'grab' }} onMouseDown={onMouseDown}>
+        <h3>Display Settings</h3>
+        <button className="btn ghost sm" onClick={() => onClose(false)} style={{ color:'oklch(0.4 0.005 240)', width:24, height:24, padding:0, justifyContent:'center' }}>✕</button>
+      </div>
+      <div className="tweaks-row">
+        <div className="tweaks-label">Accent Color</div>
+        <div className="tweaks-options">
+          {['green','teal','amber'].map(c => (
+            <button key={c} className={`tweak-opt${accentColor===c?' active':''}`} onClick={() => setAccentColor(c)} style={{ textTransform:'capitalize' }}>{c}</button>
+          ))}
+        </div>
+      </div>
+      <div className="tweaks-row">
+        <div className="tweaks-label">Chart Style</div>
+        <div className="tweaks-options">
+          {['area','bars'].map(s => (
+            <button key={s} className={`tweak-opt${chartStyle===s?' active':''}`} onClick={() => setChartStyle(s)} style={{ textTransform:'capitalize' }}>{s}</button>
+          ))}
+        </div>
+      </div>
+      <div className="tweaks-row" style={{ marginBottom:0 }}>
+        <div className="tweaks-label">Density</div>
+        <div className="tweaks-options">
+          {[['comfortable','Comfortable'],['dense','Dense']].map(([v,l]) => (
+            <button key={v} className={`tweak-opt${density===v?' active':''}`} onClick={() => setDensity(v)}>{l}</button>
+          ))}
+        </div>
+      </div>
+      <div style={{ marginTop:14, paddingTop:12, borderTop:'1px solid oklch(0.72 0.004 240 / 0.25)', fontSize:10, color:'oklch(0.5 0.006 240)', fontFamily:'var(--font-mono)' }}>Press T to toggle · Drag to move</div>
+    </div>
+  );
+}
+window.TweaksPanel = TweaksPanel;
+</script>
+
+<script type="text/babel">
+/* ── SHARED COMPONENTS ───────────────────────────────────── */
+
+function CountUp({ target, duration }) {
+  const [val, setVal] = React.useState(0);
+  const start = React.useRef(null);
+  const dur = duration || 900;
+  React.useEffect(() => {
+    let raf;
+    const tick = (ts) => {
+      if (!start.current) start.current = ts;
+      const p = Math.min((ts - start.current) / dur, 1);
+      const e = 1 - Math.pow(1 - p, 3);
+      setVal(Math.round(e * target));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, dur]);
+  return val.toLocaleString();
+}
+
+function Sparkline({ data, width, height }) {
+  const w = width || 80, h = height || 24;
+  if (!data || data.length < 2) return null;
+  const mn = Math.min(...data), mx = Math.max(...data), range = mx - mn || 1;
+  const pts = data.map((v,i) => [((i/(data.length-1))*w).toFixed(1), (h - ((v-mn)/range)*(h-4) - 2).toFixed(1)]);
+  const path = `M${pts.map(p=>p.join(',')).join('L')}`;
+  const area = `M${pts[0].join(',')}${pts.map(p=>`L${p.join(',')}`).join('')}L${w},${h}L0,${h}Z`;
+  return (
+    <svg width={w} height={h} style={{ display:'block', overflow:'visible' }}>
+      <defs><linearGradient id="slg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--accent)" stopOpacity=".25"/><stop offset="100%" stopColor="var(--accent)" stopOpacity="0"/></linearGradient></defs>
+      <path d={area} fill="url(#slg)"/>
+      <path d={path} fill="none" stroke="var(--accent)" strokeWidth="1.5"/>
+    </svg>
+  );
+}
+
+function Sparkbar({ data, width, height }) {
+  const w = width || 60, h = height || 18;
+  if (!data || !data.length) return null;
+  const mx = Math.max(...data.map(Math.abs)) || 1;
+  const bw = Math.max(2, Math.floor(w/data.length) - 1);
+  return (
+    <svg width={w} height={h} style={{ display:'block' }}>
+      {data.map((v,i) => {
+        const bh = Math.max(2, (Math.abs(v)/mx)*(h-2));
+        return <rect key={i} x={i*(bw+1)} y={h-bh} width={bw} height={bh} fill={v>=0?'var(--pos)':'var(--neg)'} opacity=".7" rx="1"/>;
+      })}
+    </svg>
+  );
+}
+
+function NDVICanvas({ mode, width, height, seed }) {
+  const m = mode || 'before', w = width || 220, h = height || 140, s = seed || 42;
+  const ref = React.useRef();
+  React.useEffect(() => {
+    const c = ref.current; if (!c) return;
+    const ctx = c.getContext('2d');
+    const img = ctx.createImageData(w, h);
+    const d = img.data;
+    const rng = (x,y,k) => (Math.sin(x*0.04+k)*0.5+0.5)*(Math.cos(y*0.05+k*1.3)*0.5+0.5);
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const idx = (y*w+x)*4;
+        const nx = x/w, ny = y/h;
+        let ndvi = rng(x,y,s)*0.5 + rng(x*2,y*2,s+1)*0.3 + rng(x*4,y*4,s+2)*0.15 + rng(x*8,y*8,s+3)*0.05;
+        const river = Math.abs(Math.sin((nx*3+ny*2)*Math.PI) - 0.5) < 0.04;
+        if (river && ndvi < 0.4) ndvi = 0.05;
+        const px = nx-0.55, py = ny-0.45, inPatch = px*px+py*py < 0.04;
+        if (m === 'delta') {
+          const delta = inPatch ? -0.4 : rng(x,y,s+9)*0.08-0.03;
+          if (delta < -0.05) { d[idx]=180; d[idx+1]=40; d[idx+2]=30; }
+          else if (delta > 0.03) { d[idx]=40; d[idx+1]=140; d[idx+2]=60; }
+          else { d[idx]=28; d[idx+1]=33; d[idx+2]=28; }
+        } else {
+          const v = (m==='after'&&inPatch) ? ndvi*0.3 : ndvi;
+          let r,g,b;
+          if (v < 0.5) { const t=v*2; r=Math.round(118-38*t); g=Math.round(74+62*t); b=Math.round(30+10*t); }
+          else { const t=(v-0.5)*2; r=Math.round(80-44*t); g=Math.round(136+28*t); b=Math.round(40+14*t); }
+          d[idx]=r; d[idx+1]=g; d[idx+2]=b;
+        }
+        d[idx+3]=255;
+      }
+    }
+    ctx.putImageData(img,0,0);
+    ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=0.5;
+    for (let i=1;i<4;i++) { ctx.beginPath();ctx.moveTo(i*w/4,0);ctx.lineTo(i*w/4,h);ctx.stroke(); ctx.beginPath();ctx.moveTo(0,i*h/4);ctx.lineTo(w,i*h/4);ctx.stroke(); }
+  }, [m, w, h, s]);
+  return <canvas ref={ref} width={w} height={h} className="ndvi-canvas"/>;
+}
+
+const I = {
+  sat:  () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M3 3l4 4M17 7l4-4M7 17l-4 4M21 21l-4-4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>,
+  lay:  () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 2 7 12 12 22 7"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>,
+  spk:  () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/></svg>,
+  shld: () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+  flsk: () => <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 3h6l1 8H8L9 3z"/><path d="M8 11l-3 8a1 1 0 001 1h12a1 1 0 001-1l-3-8"/></svg>,
+  copy: () => <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>,
+  file: () => <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>,
+  chk:  () => <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+  tsh:  () => <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>,
+  ply:  () => <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>,
+  ldr:  () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="spin"><path d="M21 12a9 9 0 11-18 0"/></svg>,
+  att:  () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66L9.64 16.2a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>,
+  snd:  () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
+  alr:  () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
+  exp:  () => <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
+  pls:  () => <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+  log:  () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>,
+  key:  () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6M15.5 7.5l3 3L22 7l-3-3"/></svg>,
+  cog:  () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>,
+};
+
+window.CountUp = CountUp;
+window.Sparkline = Sparkline;
+window.Sparkbar = Sparkbar;
+window.NDVICanvas = NDVICanvas;
+window.I = I;
+</script>
+
+<script type="text/babel">
+/* ── VIEW: ANALYZE ───────────────────────────────────────── */
+const STEPS = ['Validating AOI','Fetching baseline imagery','Fetching monitoring imagery','Cloud masking','NDVI composite','FIA ML coefficient','Uncertainty bands','Signing artifact'];
+const FT = [{l:'Pine',c:100},{l:'Spruce Fir',c:200},{l:'Loblolly Pine',c:220},{l:'Oak Hardwood',c:400},{l:'Mixed',c:500}];
+
+function BboxPreview({ v }) {
+  const [mnLon, mnLat, mxLon, mxLat] = v;
+  const valid = mnLon && mnLat && mxLon && mxLat && !isNaN(+mnLon) && !isNaN(+mxLon);
+  return (
+    <div className="bbox-map">
+      <div className="bbox-topo"/>
+      {valid ? (() => {
+        const toX = n => ((+n + 180) / 360) * 100;
+        const toY = n => ((90 - +n) / 180) * 100;
+        const l = `${toX(mnLon)}%`, t = `${toY(mxLat)}%`;
+        const w = `${Math.max(2, toX(mxLon)-toX(mnLon))}%`, h2 = `${Math.max(2, toY(mnLat)-toY(mxLat))}%`;
+        return (
+          <div className="bbox-rect" style={{ left:l, top:t, width:w, height:h2 }}>
+            <div className="bbox-corner" style={{ top:-3, left:-3 }}/>
+            <div className="bbox-corner" style={{ top:-3, right:-3 }}/>
+            <div className="bbox-corner" style={{ bottom:-3, left:-3 }}/>
+            <div className="bbox-corner" style={{ bottom:-3, right:-3 }}/>
+            <div className="bbox-label" style={{ top:2, left:4 }}>{(+mxLat).toFixed(2)}°N</div>
+            <div className="bbox-label" style={{ bottom:2, right:4 }}>{(+mxLon).toFixed(2)}°E</div>
+          </div>
+        );
+      })() : (
+        <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, color:'var(--fg-5)' }}>Enter coordinates to preview</div>
+      )}
+    </div>
+  );
+}
+
+function ViewAnalyze({ chartStyle, onResult }) {
+  const [form, setForm] = React.useState({
+    project_name:'Amazon Basin Reserve', min_lon:'-60.5', min_lat:'-3.2', max_lon:'-58.1', max_lat:'-1.5',
+    baseline_start:'2021-01-01', baseline_end:'2021-12-31', monitoring_start:'2023-01-01', monitoring_end:'2023-12-31',
+    forest_type_code:'500', canopy_cover_pct:'78', stand_age:'35', basal_area_live:'28',
+  });
+  const [running, setRunning] = React.useState(false);
+  const [progress, setProgress] = React.useState(0);
+  const [result, setResult] = React.useState(null);
+  const [aiText, setAiText] = React.useState(null);
+  const [visParas, setVisParas] = React.useState([]);
+  const [error, setError] = React.useState(null);
+  const timer = React.useRef();
+  const sf = (k,v) => setForm(f => ({ ...f, [k]: v }));
+
+  const run = async () => {
+    setRunning(true); setProgress(0); setResult(null); setAiText(null); setError(null); setVisParas([]);
+    let p = 0;
+    timer.current = setInterval(() => { p = Math.min(p + (0.92-p)*0.045, 0.92); setProgress(p); }, 200);
+    try {
+      const body = {
+        project_name: form.project_name,
+        min_lon: +form.min_lon, min_lat: +form.min_lat,
+        max_lon: +form.max_lon, max_lat: +form.max_lat,
+        baseline_start: form.baseline_start, baseline_end: form.baseline_end,
+        monitoring_start: form.monitoring_start, monitoring_end: form.monitoring_end,
+        forest_type_code: +form.forest_type_code,
+        canopy_cover_pct: +form.canopy_cover_pct,
+        stand_age: +form.stand_age,
+        basal_area_live: +form.basal_area_live,
+      };
+      const res = await fetch('http://localhost:8000/estimate', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+      if (!res.ok) throw new Error(`API ${res.status}`);
+      const data = await res.json();
+      clearInterval(timer.current); setProgress(1);
+      setTimeout(() => { setResult(data); onResult && onResult(data); interpret(data, body); }, 400);
+    } catch (e) {
+      clearInterval(timer.current); setError(e.message); setRunning(false); setProgress(0);
+    }
+  };
+
+  const interpret = async (est, fb) => {
+    try {
+      const res = await fetch('http://localhost:8000/interpret', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ...est, ...fb }) });
+      if (res.ok) {
+        const d = await res.json();
+        const text = d.interpretation || d.text || '';
+        const paras = text.split('\n\n').filter(Boolean).slice(0,3);
+        setAiText(paras);
+        paras.forEach((_,i) => setTimeout(() => setVisParas(v => [...v, i]), i*320+100));
+      }
+    } catch {}
+    setRunning(false);
+  };
+
+  const dlPDF = async () => {
+    if (!result) return;
+    try {
+      const res = await fetch('http://localhost:8000/report', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ...result, project_name: form.project_name }) });
+      if (!res.ok) return;
+      const blob = await res.blob();
+      const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: `carbontrust_${form.project_name.replace(/\s+/g,'_')}.pdf` });
+      a.click();
+    } catch {}
+  };
+
+  const aStep = Math.floor(progress * STEPS.length);
+
+  return (
+    <div className="analyze-grid">
+      {/* ─ Form */}
+      <div className="form-sticky">
+        <div className="card" style={{ padding:20 }}>
+          <div style={{ fontSize:11,fontWeight:600,color:'var(--fg-4)',letterSpacing:'0.07em',textTransform:'uppercase',marginBottom:18 }}>Analysis Parameters</div>
+
+          <div className="field" style={{ marginBottom:14 }}>
+            <label className="field-label">Project Name</label>
+            <input className="field-input" style={{ fontFamily:'var(--font-sans)' }} value={form.project_name} onChange={e=>sf('project_name',e.target.value)} placeholder="e.g. Amazon Basin Reserve"/>
+          </div>
+
+          <div style={{ marginBottom:14 }}>
+            <div className="field-label" style={{ marginBottom:6 }}>Bounding Box</div>
+            <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:6 }}>
+              {[['min_lon','Min Lon'],['min_lat','Min Lat'],['max_lon','Max Lon'],['max_lat','Max Lat']].map(([k,l]) => (
+                <div key={k} className="field">
+                  <label className="field-label" style={{ fontSize:10 }}>{l}</label>
+                  <input type="number" className="field-input" value={form[k]} onChange={e=>sf(k,e.target.value)} step="0.001" placeholder="0.000"/>
+                </div>
+              ))}
+            </div>
+            <BboxPreview v={[form.min_lon,form.min_lat,form.max_lon,form.max_lat]}/>
+          </div>
+
+          <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:14 }}>
+            {[['Baseline Period','baseline_start','baseline_end'],['Monitoring Period','monitoring_start','monitoring_end']].map(([label,k1,k2]) => (
+              <div key={label}>
+                <div className="field-label" style={{ marginBottom:6 }}>{label}</div>
+                <div style={{ display:'flex',flexDirection:'column',gap:4 }}>
+                  <input type="date" className="field-input" value={form[k1]} onChange={e=>sf(k1,e.target.value)}/>
+                  <input type="date" className="field-input" value={form[k2]} onChange={e=>sf(k2,e.target.value)}/>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ marginBottom:16 }}>
+            <div className="field-label" style={{ marginBottom:8 }}>Forest Attributes</div>
+            <div className="field" style={{ marginBottom:8 }}>
+              <label className="field-label" style={{ fontSize:10 }}>Forest Type</label>
+              <select className="field-input" value={form.forest_type_code} onChange={e=>sf('forest_type_code',e.target.value)}>
+                {FT.map(ft => <option key={ft.c} value={ft.c}>{ft.l} (FIA {ft.c})</option>)}
+              </select>
+            </div>
+            <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:6 }}>
+              {[['canopy_cover_pct','Canopy Cover %'],['stand_age','Stand Age (yr)'],['basal_area_live','Basal Area (m²/ha)']].map(([k,l]) => (
+                <div key={k} className="field">
+                  <label className="field-label" style={{ fontSize:10 }}>{l}</label>
+                  <input type="number" className="field-input" value={form[k]} onChange={e=>sf(k,e.target.value)} step="1"/>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display:'flex',gap:8 }}>
+            <button className="btn primary" style={{ flex:1 }} onClick={run} disabled={running}>
+              {running ? <><I.ldr/> Running…</> : <><I.sat/> Run Analysis</>}
+            </button>
+            {result && <button className="btn" onClick={dlPDF}><I.file/> PDF</button>}
+          </div>
+          <div style={{ marginTop:8,fontSize:10,color:'var(--fg-5)',fontFamily:'var(--font-mono)',textAlign:'center' }}>~22s · IPCC 2006 Tier 3 · Sentinel-2 SR</div>
+        </div>
+      </div>
+
+      {/* ─ Results */}
+      <div>
+        {error && <div className="error-banner fade-up"><I.alr/>{error}</div>}
+
+        {!running && !result && !error && (
+          <div className="card"><div className="empty-state">
+            <div className="empty-icon"><I.sat/></div>
+            <div className="empty-title">Ready for Verification</div>
+            <div className="empty-desc">Configure project parameters and run an IPCC-compliant carbon sequestration analysis.</div>
+            <div style={{ display:'flex',flexDirection:'column',gap:6,textAlign:'left' }}>
+              {['Sentinel-2 L2A surface reflectance','IPCC 2006 Tier 3 methodology','FIA ML regression coefficient','Gemini 2.5 Flash interpretation','SHA-256 signed audit artifact'].map(f => (
+                <div key={f} className="efeat">{f}</div>
+              ))}
+            </div>
+          </div></div>
+        )}
+
+        {running && (
+          <div className="card" style={{ padding:24 }}>
+            <div style={{ marginBottom:8,fontSize:12,color:'var(--fg-3)',display:'flex',justifyContent:'space-between' }}>
+              <span>Running pipeline…</span>
+              <span style={{ fontFamily:'var(--font-mono)' }}>{Math.round(progress*100)}%</span>
+            </div>
+            <div className="progress-track"><div className="progress-fill" style={{ width:`${progress*100}%` }}/></div>
+            <div className="pipeline">
+              {STEPS.map((s,i) => {
+                const st = i < aStep ? 'done' : i === aStep ? 'active' : '';
+                return (
+                  <div key={s} className={`step${st?' '+st:''}`}>
+                    <div className="step-dot"/>
+                    {st==='done' && <I.chk/>}
+                    <span>{s}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {result && (() => {
+          const co2 = Math.round(result.co2e_tonnes || 24380);
+          const isLoss = co2 < 0;
+          const co2Abs = Math.abs(co2);
+          const unc = result.uncertainty_pct || 8.3;
+          const lo = result.uncertainty_low || co2Abs*0.9;
+          const hi = result.uncertainty_high || co2Abs*1.1;
+          const span = (hi - lo) || co2Abs*0.2;
+          const base = co2Abs - span*0.7;
+          const loPct = Math.max(0,((lo-base)/span)*80);
+          const wPct = Math.min(100,((hi-lo)/span)*80);
+          const ePct = Math.max(0,Math.min(100,((co2-base)/span)*80));
+          return (
+            <div style={{ display:'flex',flexDirection:'column',gap:16 }}>
+              <div style={{ display:'flex',alignItems:'center',gap:10,flexWrap:'wrap' }}>
+                <span className={`pill ${isLoss ? 'neg' : 'pos'}`}>
+                  {isLoss ? <I.alr/> : <I.chk/>} {isLoss ? 'Net Loss' : 'Verified'}
+                </span>
+                <span style={{ fontWeight:600,color:'var(--fg)' }}>{form.project_name}</span>
+                <span className="pill ghost" style={{ fontFamily:'var(--font-mono)',fontSize:10 }}>IPCC 2006 · Tier 3</span>
+                <span className="pill warn">±{unc}%</span>
+                <div style={{ marginLeft:'auto',display:'flex',gap:8 }}>
+                  <button className="btn sm" onClick={() => navigator.clipboard?.writeText(result.run_hash||'')}><I.copy/> Hash</button>
+                  <button className="btn sm" onClick={dlPDF}><I.file/> PDF</button>
+                </div>
+              </div>
+
+              <div className="card" style={{ padding:20 }}>
+                <div className="hero-split">
+                  <div>
+                    <div className="carbon-big"><CountUp target={co2Abs}/></div>
+                    <div className="carbon-unit">tCO₂e {isLoss ? 'released' : 'sequestered'}</div>
+                    <div className="unc-track">
+                      <div className="unc-band" style={{ left:`${loPct}%`,width:`${wPct}%` }}/>
+                      <div className="unc-pip" style={{ left:`${ePct}%` }}/>
+                    </div>
+                    <div style={{ display:'flex',justifyContent:'space-between',fontSize:10,color:'var(--fg-4)',fontFamily:'var(--font-mono)',marginBottom:16 }}>
+                      <span>{Math.round(lo).toLocaleString()} low</span><span>{Math.round(hi).toLocaleString()} high</span>
+                    </div>
+                    <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:12 }}>
+                      <div><div className="mini-stat-val">{(result.area_ha||124500).toLocaleString()} ha</div><div className="mini-stat-label">Forest Area</div></div>
+                      <div><div className="mini-stat-val">{result.ml_coefficient||'0.847'}</div><div className="mini-stat-label">ML Coefficient</div></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize:11,fontWeight:500,color:'var(--fg-4)',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:8 }}>NDVI Analysis</div>
+                    <div className="ndvi-grid">
+                      {[['before','Baseline'],['after','Monitor'],['delta','Δ NDVI']].map(([m,l]) => (
+                        <div key={m} className="ndvi-panel">
+                          <NDVICanvas mode={m} width={110} height={80}/>
+                          <div className="ndvi-badge">{l}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="ndvi-legend">
+                      <span>0.0</span>
+                      <div className="legend-bar" style={{ background:'linear-gradient(to right,rgb(118,74,30),rgb(80,136,40),rgb(36,164,54))' }}/>
+                      <span>1.0</span>
+                      <span style={{ marginLeft:6 }}>Δ:</span>
+                      <div className="legend-bar" style={{ background:'linear-gradient(to right,rgb(180,40,30),rgb(28,33,28),rgb(40,140,60))',flex:'none',width:44 }}/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {(aiText || running) && (
+                <div className="ai-card">
+                  <div style={{ display:'flex',alignItems:'center',gap:9,marginBottom:14 }}>
+                    <I.spk/>
+                    <span style={{ fontSize:12,fontWeight:600,color:'var(--info)' }}>AI Interpretation</span>
+                    <span className="pill info" style={{ marginLeft:'auto' }}>Gemini 2.5 Flash</span>
+                  </div>
+                  {aiText ? aiText.map((p,i) => (
+                    <div key={i} className={`ai-para${visParas.includes(i)?' vis':''}`}>{p}</div>
+                  )) : (
+                    <div style={{ color:'var(--fg-4)',fontSize:12,display:'flex',alignItems:'center',gap:8 }}><I.ldr/> Generating interpretation…</div>
+                  )}
+                </div>
+              )}
+
+              <div className="card" style={{ overflow:'hidden' }}>
+                <div style={{ padding:'13px 16px',borderBottom:'1px solid var(--hairline)',fontSize:11,fontWeight:600,color:'var(--fg-4)',textTransform:'uppercase',letterSpacing:'0.06em' }}>Detail Metrics</div>
+                <div className="detail-grid">
+                  {[
+                    ['Baseline NDVI',(result.baseline_ndvi||0.812).toFixed(3)],
+                    ['Monitoring NDVI',(result.monitoring_ndvi||0.781).toFixed(3)],
+                    ['NDVI Δ',((result.ndvi_delta||(-0.031))>=0?'+':'')+(result.ndvi_delta||-0.031).toFixed(3)],
+                    ['Biomass Δ',`${result.biomass_delta_t_ha||'-12.4'} t/ha`],
+                    ['Carbon Δ',`${result.carbon_delta_t_c||'-5.8'} tC/ha`],
+                    ['CO₂e',`${co2.toLocaleString()} t`],
+                  ].map(([l,v]) => (
+                    <div key={l} className="detail-cell">
+                      <div className="detail-val">{v}</div>
+                      <div className="detail-label">{l}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="card" style={{ padding:16 }}>
+                <div style={{ display:'flex',alignItems:'center',gap:8,marginBottom:10 }}>
+                  <I.shld/>
+                  <span style={{ fontSize:12,fontWeight:600,color:'var(--fg-3)' }}>SHA-256 Run Signature</span>
+                </div>
+                <div className="hash-chip">{result.run_hash||'3f9a2b1c4d8e7f6a0b5c2d9e4f1a3b7c8d0e2f5a1b4c7d9e0f2a4b6c8d1e3f5a'}</div>
+                <div style={{ marginTop:8,fontSize:10,color:'var(--fg-5)',fontFamily:'var(--font-mono)' }}>Generated {new Date().toISOString()}</div>
+              </div>
+            </div>
+          );
+        })()}
+      </div>
+    </div>
+  );
+}
+window.ViewAnalyze = ViewAnalyze;
+</script>
+
+<script type="text/babel">
+/* ── VIEW: MONITOR ───────────────────────────────────────── */
+const DEMO = [
+  { id:'proj_lc14', name:'Loblolly · Carolina 14', description:'Piedmont mixed pine plantation', forest_type_code:220, canopy_cover_pct:82, stand_age:28, basal_area_live:31, bbox:'-79.4,-35.1,-78.1,-34.2', trend:[0.781,0.78,0.774,0.765,0.751,0.73,0.612], last_run:'2025-05-18T14:32:00Z', alert:{ severity:'critical', anomaly_type:'Deforestation', summary:'Rapid canopy loss detected in eastern sector. NDVI drop of 0.169 exceeds 3σ threshold. Immediate field verification recommended.', baseline_ndvi:0.781, current_ndvi:0.612, delta:-0.169 } },
+  { id:'proj_gw07', name:'George Washington NF · Block 7', description:'Mixed hardwood stand, Appalachian ridgeline', forest_type_code:400, canopy_cover_pct:74, stand_age:52, basal_area_live:38, bbox:'-78.9,38.1,-78.2,38.7', trend:[0.741,0.743,0.742,0.739,0.738,0.736,0.735], last_run:'2025-05-17T09:15:00Z', alert:{ severity:'warning', anomaly_type:'Cloud Cover', summary:'Persistent cloud contamination in 23% of monitoring pixels. NDVI estimate carries elevated uncertainty. Re-acquisition scheduled.', baseline_ndvi:0.741, current_ndvi:0.735, delta:-0.006 } },
+  { id:'proj_sp02', name:'Sumatra Peat · Riau 02', description:'Tropical peatland forest, fire risk zone', forest_type_code:500, canopy_cover_pct:69, stand_age:40, basal_area_live:22, bbox:'101.2,0.1,102.8,1.4', trend:[0.826,0.821,0.815,0.808,0.799,0.791,0.785], last_run:'2025-05-19T01:00:00Z', alert:{ severity:'warning', anomaly_type:'NDVI Drop', summary:'Gradual NDVI decline over 6-month window. Consistent with early-stage peat drainage or fire activity near perimeter.', baseline_ndvi:0.826, current_ndvi:0.785, delta:-0.041 } },
+  { id:'proj_on4b', name:'Olympic NF · Section 4B', description:'Coastal temperate rainforest', forest_type_code:200, canopy_cover_pct:91, stand_age:120, basal_area_live:62, bbox:'-124.2,47.5,-123.5,48.2', trend:[0.832,0.835,0.840,0.842,0.845,0.848,0.851], last_run:'2025-05-18T20:45:00Z', alert:null },
+  { id:'proj_bn22', name:'Boreal North · Cluster 22', description:'Black spruce dominated boreal stand', forest_type_code:100, canopy_cover_pct:58, stand_age:65, basal_area_live:18, bbox:'-96.4,56.2,-94.8,57.1', trend:[0.612,0.625,0.638,0.649,0.660,0.672,0.681], last_run:'2025-05-16T12:00:00Z', alert:{ severity:'info', anomaly_type:'Recovery', summary:'Confirmed post-fire recovery trajectory. NDVI increase of 0.069 over monitoring period consistent with natural regeneration.', baseline_ndvi:0.612, current_ndvi:0.681, delta:0.069 } },
+];
+
+const FTMAP = {100:'Pine',200:'Spruce Fir',220:'Loblolly Pine',400:'Oak Hardwood',500:'Mixed'};
+const FT2 = [{l:'Pine',c:100},{l:'Spruce Fir',c:200},{l:'Loblolly Pine',c:220},{l:'Oak Hardwood',c:400},{l:'Mixed',c:500}];
+
+function timeAgo(iso) {
+  if (!iso) return '—';
+  const m = (Date.now() - new Date(iso)) / 60000;
+  if (m < 60) return `${Math.round(m)}m ago`;
+  if (m < 1440) return `${Math.round(m/60)}h ago`;
+  return `${Math.round(m/1440)}d ago`;
+}
+
+function ProjCard({ p, onDel, onRun }) {
+  const sev = p.alert?.severity;
+  const topCls = sev==='critical'?'critical':sev==='warning'?'warning':sev==='info'?'info':'ok';
+  const pillCls = sev==='critical'?'neg':sev==='warning'?'warn':sev==='info'?'info':'pos';
+  const deltas = p.trend?.map((v,i,a) => i===0?0:+(v-a[i-1]).toFixed(4)).slice(1)||[];
+  return (
+    <div className="proj-card">
+      <div className={`proj-top-border ${topCls}`}/>
+      <div className="proj-body">
+        <div style={{ display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:8,marginBottom:6 }}>
+          <div>
+            <div className="proj-name">{p.name}</div>
+            <div className="proj-desc">{p.description}</div>
+          </div>
+          <div className="hash-chip" style={{ fontSize:9,padding:'2px 6px',flexShrink:0 }}>{p.id}</div>
+        </div>
+        <div className="attrs">
+          <span className="pill ghost">FIA {p.forest_type_code}</span>
+          <span className="pill ghost">{p.canopy_cover_pct}% canopy</span>
+          <span className="pill ghost">{p.stand_age} yr</span>
+          <span className="pill ghost">{p.basal_area_live} m²/ha</span>
+        </div>
+        <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10 }}>
+          <div className="proj-bbox">{p.bbox}</div>
+          <Sparkbar data={deltas} width={58} height={16}/>
+        </div>
+        <div className="alert-block">
+          {p.alert ? (
+            <>
+              <div style={{ display:'flex',alignItems:'center',gap:8,marginBottom:7 }}>
+                <span className={`pill ${pillCls}`}>{sev}</span>
+                <span style={{ fontSize:12,fontWeight:500,color:'var(--fg-2)' }}>{p.alert.anomaly_type}</span>
+              </div>
+              <div style={{ fontSize:12,color:'var(--fg-3)',lineHeight:1.65,marginBottom:8 }}>{p.alert.summary}</div>
+              <div className="alert-stats">
+                {[['Baseline',(p.alert.baseline_ndvi||0).toFixed(3)],['Current',(p.alert.current_ndvi||0).toFixed(3)],['Δ NDVI',(p.alert.delta>=0?'+':'')+(p.alert.delta||0).toFixed(3)]].map(([l,v]) => (
+                  <div key={l}><div className="asv">{v}</div><div className="asl">{l}</div></div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div style={{ display:'flex',alignItems:'center',gap:8,fontSize:12,color:'var(--pos)' }}>
+              <div className="live-dot" style={{ width:6,height:6,flexShrink:0 }}/>
+              No anomalies detected
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="proj-footer">
+        <div className="proj-time">Last run {timeAgo(p.last_run)}</div>
+        <div style={{ display:'flex',gap:6 }}>
+          <button className="btn sm danger" onClick={() => onDel(p.id)}><I.tsh/></button>
+          <button className="btn sm" onClick={() => onRun(p.id)}><I.ply/> Run</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ViewMonitor() {
+  const [projects, setProjects] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [filter, setFilter] = React.useState('all');
+  const [showReg, setShowReg] = React.useState(false);
+  const [reg, setReg] = React.useState({ name:'', description:'', bbox:'', forest_type_code:'500', canopy_cover_pct:'75', stand_age:'30', basal_area_live:'25' });
+  const sr = (k,v) => setReg(r => ({ ...r, [k]: v }));
+
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const r = await fetch('http://localhost:8000/projects');
+        if (!r.ok) throw 0;
+        const data = await r.json();
+        const wA = await Promise.all(data.map(async p => {
+          try { const ar = await fetch(`http://localhost:8000/projects/${p.id}/alerts`); return { ...p, alert: ar.ok ? (await ar.json())[0]||null : null }; }
+          catch { return p; }
+        }));
+        setProjects(wA);
+      } catch { setProjects(DEMO); }
+      setLoading(false);
+    })();
+  }, []);
+
+  const cnts = {
+    all: projects.length,
+    critical: projects.filter(p=>p.alert?.severity==='critical').length,
+    warning: projects.filter(p=>p.alert?.severity==='warning').length,
+    healthy: projects.filter(p=>!p.alert||p.alert?.severity==='info').length,
+  };
+  const visible = filter==='all' ? projects
+    : filter==='critical' ? projects.filter(p=>p.alert?.severity==='critical')
+    : filter==='warning' ? projects.filter(p=>p.alert?.severity==='warning')
+    : projects.filter(p=>!p.alert||p.alert?.severity==='info');
+
+  const del = async (id) => {
+    try { await fetch(`http://localhost:8000/projects/${id}`,{method:'DELETE'}); } catch {}
+    setProjects(ps=>ps.filter(p=>p.id!==id));
+  };
+
+  const runMon = async (id) => {
+    try {
+      const r = await fetch(`http://localhost:8000/monitor/trigger/${id}`,{method:'POST'});
+      if (r.ok) { const d = await r.json(); setProjects(ps=>ps.map(p=>p.id===id?{...p,alert:d.alert,last_run:new Date().toISOString()}:p)); }
+    } catch {}
+  };
+
+  const register = async () => {
+    const body = { name:reg.name, description:reg.description, bbox:reg.bbox, forest_type_code:+reg.forest_type_code, canopy_cover_pct:+reg.canopy_cover_pct, stand_age:+reg.stand_age, basal_area_live:+reg.basal_area_live };
+    try {
+      const r = await fetch('http://localhost:8000/projects',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const d = r.ok ? await r.json() : {};
+      setProjects(ps=>[{...body,id:d.id||`proj_${Date.now().toString(36)}`,trend:[],last_run:new Date().toISOString(),alert:null},...ps]);
+    } catch {
+      setProjects(ps=>[{...body,id:`proj_${Date.now().toString(36)}`,trend:[],last_run:new Date().toISOString(),alert:null},...ps]);
+    }
+    setShowReg(false);
+  };
+
+  return (
+    <div>
+      <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20 }}>
+        <div>
+          <h1 style={{ fontSize:18,fontWeight:600,color:'var(--fg)',marginBottom:3 }}>Monitored Projects</h1>
+          <div style={{ fontSize:12,color:'var(--fg-4)' }}>{projects.length} active projects · alerts via webhook</div>
+        </div>
+        <div style={{ display:'flex',gap:8 }}>
+          <button className="btn"><I.exp/> Export</button>
+          <button className="btn primary" onClick={()=>setShowReg(v=>!v)}><I.pls/> Register Project</button>
+        </div>
+      </div>
+
+      <div className="summary-strip">
+        {[['all','All',null],['critical','Critical','neg'],['warning','Warning','warn'],['healthy','Healthy','pos']].map(([k,l,dot]) => (
+          <div key={k} className={`summary-cell${filter===k?' active':''}`} onClick={()=>setFilter(k)}>
+            <div className="sum-label">
+              {dot && <span style={{ width:6,height:6,borderRadius:'50%',background:`var(--${dot})`,display:'inline-block',flexShrink:0 }}/>}
+              {l}
+            </div>
+            <div className="sum-val">{cnts[k]}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className={`collapsible${showReg?' open':' closed'}`}>
+        <div className="register-form">
+          <div style={{ fontSize:12,fontWeight:600,color:'var(--accent)',marginBottom:14 }}>Register New Project</div>
+          <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:12 }}>
+            <div className="field"><label className="field-label">Project Name</label><input className="field-input" style={{ fontFamily:'var(--font-sans)' }} value={reg.name} onChange={e=>sr('name',e.target.value)} placeholder="Forest Reserve Alpha"/></div>
+            <div className="field"><label className="field-label">Description</label><input className="field-input" style={{ fontFamily:'var(--font-sans)' }} value={reg.description} onChange={e=>sr('description',e.target.value)} placeholder="Brief description"/></div>
+            <div className="field"><label className="field-label">Bounding Box (min_lon,min_lat,max_lon,max_lat)</label><input className="field-input" value={reg.bbox} onChange={e=>sr('bbox',e.target.value)} placeholder="-60.5,-3.2,-58.1,-1.5"/></div>
+            <div className="field"><label className="field-label">Forest Type</label>
+              <select className="field-input" value={reg.forest_type_code} onChange={e=>sr('forest_type_code',e.target.value)}>
+                {FT2.map(ft=><option key={ft.c} value={ft.c}>{ft.l} (FIA {ft.c})</option>)}
+              </select>
+            </div>
+            {[['canopy_cover_pct','Canopy Cover %'],['stand_age','Stand Age (yr)'],['basal_area_live','Basal Area (m²/ha)']].map(([k,l]) => (
+              <div key={k} className="field"><label className="field-label">{l}</label><input type="number" className="field-input" value={reg[k]} onChange={e=>sr(k,e.target.value)}/></div>
+            ))}
+          </div>
+          <div style={{ display:'flex',gap:8 }}>
+            <button className="btn primary" onClick={register}><I.pls/> Register</button>
+            <button className="btn ghost" onClick={()=>setShowReg(false)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      {loading ? (
+        <div style={{ display:'flex',justifyContent:'center',padding:48 }}><I.ldr/></div>
+      ) : (
+        <div className="proj-grid">
+          {visible.map(p=><ProjCard key={p.id} p={p} onDel={del} onRun={runMon}/>)}
+        </div>
+      )}
+    </div>
+  );
+}
+window.ViewMonitor = ViewMonitor;
+</script>
+
+<script type="text/babel">
+/* ── VIEW: ASSISTANT ─────────────────────────────────────── */
+const SEED_MSGS = [
+  { role:'user', content:"What's the carbon sequestration status for proj_4a92e? I need the full breakdown." },
+  { role:'ai', toolCalls:[
+    { name:'get_project', args:'proj_4a92e', result:'ok' },
+    { name:'run_estimate', args:'forest_type=400, bbox=[-78.9,38.1,-78.2,38.7]', result:'ok' },
+  ], content:"I've run a full IPCC Tier 3 analysis on George Washington NF Block 7 (proj_4a92e). The monitoring period shows a marginal NDVI decline with an estimated net carbon impact.", stats:{ carbon:'-4,820 tCO₂e', ndvi:'-0.031', area:'12,400 ha', conf:'87.3%' } },
+  { role:'user', content:"That NDVI drop seems marginal. Is it statistically significant given the cloud masking uncertainty?" },
+  { role:'ai', content:"Good question. With 23% cloud contamination in the monitoring period, the −0.031 NDVI delta falls within the 1.2σ range for this stand type — below the 2σ threshold for a confirmed anomaly. The system has flagged it as a warning rather than critical.\n\nI'd recommend scheduling a clean-acquisition window in Q3 before triggering any protocol response. The FIA coefficient for Oak Hardwood (400) carries an R² of 0.91, so the biomass conversion is reliable — the uncertainty comes from pixel coverage, not the model." },
+];
+
+const SUGS = [
+  'Compare NDVI trends across all monitored projects',
+  'Explain the FIA ML coefficient methodology',
+  'Which projects exceed IPCC uncertainty thresholds?',
+  'Generate a Q2 2025 summary report',
+];
+
+function ViewAssistant({ lastEstimate }) {
+  const [msgs, setMsgs] = React.useState(SEED_MSGS);
+  const [input, setInput] = React.useState('');
+  const [sending, setSending] = React.useState(false);
+  const bottomRef = React.useRef();
+
+  React.useEffect(() => { bottomRef.current?.scrollIntoView({ behavior:'smooth' }); }, [msgs]);
+
+  const send = async (text) => {
+    if (!text.trim()) return;
+    setInput(''); setSending(true);
+    setMsgs(m => [...m, { role:'user', content: text }]);
+    try {
+      if (!lastEstimate) {
+        setTimeout(() => {
+          setMsgs(m => [...m, { role:'ai', content:'Please run an analysis in the Analyze view first — I need project data to answer carbon verification questions accurately.' }]);
+          setSending(false);
+        }, 700);
+        return;
+      }
+      const res = await fetch('http://localhost:8000/interpret', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ ...lastEstimate, question: text }),
+      });
+      const d = await res.json();
+      setMsgs(m => [...m, { role:'ai', content: d.interpretation || d.text || 'Analysis complete.' }]);
+    } catch {
+      setMsgs(m => [...m, { role:'ai', content:'Unable to reach the backend at localhost:8000. Make sure the API server is running.' }]);
+    }
+    setSending(false);
+  };
+
+  return (
+    <div style={{ display:'flex',flexDirection:'column',height:'calc(100vh - 52px)' }}>
+      <div style={{ padding:'20px 0 16px',borderBottom:'1px solid var(--hairline)',flexShrink:0 }}>
+        <div style={{ fontSize:10,fontWeight:500,letterSpacing:'0.1em',textTransform:'uppercase',color:'var(--fg-5)',marginBottom:4 }}>Assistant</div>
+        <div style={{ display:'flex',alignItems:'center',gap:12 }}>
+          <h1 style={{ fontSize:20,fontWeight:600,color:'var(--fg)',letterSpacing:'-0.01em' }}>Ask the verification model</h1>
+          <span className="pill info" style={{ marginLeft:'auto' }}>Gemini 2.5 Flash · grounded</span>
+        </div>
+        <div style={{ fontSize:12,color:'var(--fg-4)',marginTop:3 }}>Analyze carbon data, interpret NDVI results, and query project status.</div>
+      </div>
+
+      <div className="messages-area" style={{ padding:'20px 0' }}>
+        {msgs.map((m,i) => (
+          <div key={i} className="msg-row">
+            <div className={`msg-av ${m.role}`}>{m.role==='user'?'EC':'CT'}</div>
+            <div style={{ flex:1, minWidth:0 }}>
+              <div className="msg-name">{m.role==='user'?'Ecologist':'CarbonTrust AI'}</div>
+              {m.toolCalls && (
+                <div style={{ marginBottom:6 }}>
+                  {m.toolCalls.map((tc,ti) => (
+                    <div key={ti} className="tool-chip">
+                      <I.flsk/>
+                      <span style={{ color:'var(--fg-2)' }}>{tc.name}</span>
+                      <span style={{ color:'var(--fg-4)' }}>({tc.args})</span>
+                      <span className="tool-result"><I.chk/> {tc.result}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="msg-text" style={{ whiteSpace:'pre-wrap' }}>{m.content}</div>
+              {m.stats && (
+                <div className="stat-grid-4">
+                  {[['Carbon Δ',m.stats.carbon],['Mean Δ NDVI',m.stats.ndvi],['Area degraded',m.stats.area],['Confidence',m.stats.conf]].map(([l,v]) => (
+                    <div key={l} className="stat-cell">
+                      <div className="stat-val">{v}</div>
+                      <div className="stat-label">{l}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+        {sending && (
+          <div className="msg-row">
+            <div className="msg-av ai">CT</div>
+            <div style={{ flex:1 }}>
+              <div className="msg-name">CarbonTrust AI</div>
+              <div style={{ color:'var(--fg-4)',fontSize:12,display:'flex',alignItems:'center',gap:8 }}><I.ldr/> Thinking…</div>
+            </div>
+          </div>
+        )}
+        <div ref={bottomRef}/>
+      </div>
+
+      <div className="input-bar">
+        <div className="sug-chips">
+          {SUGS.map(s => (
+            <button key={s} className="sug-chip" onClick={()=>send(s)}><I.spk/>{s}</button>
+          ))}
+        </div>
+        <div className="input-row">
+          <button className="btn ghost sm"><I.att/></button>
+          <input className="chat-input" value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&!e.shiftKey&&send(input)} placeholder="Ask about carbon sequestration, NDVI, project status…"/>
+          <span className="route-label">POST /interpret</span>
+          <button className="btn primary sm" onClick={()=>send(input)} disabled={sending||!input.trim()}><I.snd/> Send</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+window.ViewAssistant = ViewAssistant;
+</script>
+
+<script type="text/babel">
+/* ── APP SHELL ───────────────────────────────────────────── */
+function Sidebar({ view, setView, alertCount }) {
+  const nav = [
+    { id:'analyze',   label:'Analyze',   icon:<I.sat/> },
+    { id:'monitor',   label:'Monitor',   icon:<I.lay/>, badge: alertCount||null },
+    { id:'assistant', label:'Assistant', icon:<I.spk/> },
+  ];
+  const sec = [
+    { label:'Audit Log', icon:<I.log/> },
+    { label:'API & Keys', icon:<I.key/> },
+    { label:'Settings',  icon:<I.cog/> },
+  ];
+  return (
+    <div className="sidebar">
+      <div className="sidebar-brand">
+        <div className="brand-mark"/>
+        <div className="brand-name">CarbonTrust</div>
+        <div className="brand-tag">MRV</div>
+      </div>
+      <div className="sidebar-nav">
+        <div className="nav-section">
+          {nav.map(it => (
+            <div key={it.id} className={`nav-item${view===it.id?' active':''}`} onClick={()=>setView(it.id)}>
+              <span className="nav-icon">{it.icon}</span>
+              {it.label}
+              {it.badge && <span className="nav-badge">{it.badge}</span>}
+            </div>
+          ))}
+        </div>
+        <div className="nav-section" style={{ marginTop:16 }}>
+          <div className="nav-label">System</div>
+          {sec.map(it => (
+            <div key={it.label} className="nav-item">
+              <span className="nav-icon">{it.icon}</span>
+              {it.label}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="sidebar-footer">
+        <div className="status-row"><div className="live-dot"/>api.carbontrust.io · 142ms</div>
+        <div className="footer-meta">IPCC 2006 · v1.0</div>
+        <div className="avatar-row">
+          <div className="avatar">BP</div>
+          <div>
+            <div className="avatar-name">Bhargava P.</div>
+            <div className="avatar-role">Lead Verifier</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Topbar({ view, onGear }) {
+  const TITLES = { analyze:'Analysis', monitor:'Monitor', assistant:'Assistant' };
+  return (
+    <div className="topbar">
+      <div style={{ fontSize:13,fontWeight:500,color:'var(--fg-4)' }}>CarbonTrust</div>
+      <div style={{ color:'var(--hairline-2)',fontSize:16 }}>/</div>
+      <div style={{ fontSize:13,fontWeight:600,color:'var(--fg)' }}>{TITLES[view]}</div>
+      <div style={{ marginLeft:'auto',display:'flex',alignItems:'center',gap:10 }}>
+        <span style={{ fontSize:10,fontFamily:'var(--font-mono)',color:'var(--fg-5)' }}>IPCC 2006 Tier 3</span>
+        <button className="btn ghost sm" onClick={onGear} title="Tweaks (T)">
+          <I.cog/>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [view, setView] = React.useState('analyze');
+  const [chartStyle, setChartStyle] = React.useState('area');
+  const [density, setDensity] = React.useState('comfortable');
+  const [accentColor, setAccentColor] = React.useState('green');
+  const [tweaksOpen, setTweaksOpen] = React.useState(false);
+  const [lastEstimate, setLastEstimate] = React.useState(null);
+
+  return (
+    <div className="app">
+      <Sidebar view={view} setView={setView} alertCount={2}/>
+      <div className="main">
+        <Topbar view={view} onGear={() => setTweaksOpen(o=>!o)}/>
+        <div className="content">
+          {view==='analyze'   && <ViewAnalyze chartStyle={chartStyle} onResult={setLastEstimate}/>}
+          {view==='monitor'   && <ViewMonitor/>}
+          {view==='assistant' && <ViewAssistant lastEstimate={lastEstimate}/>}
+        </div>
+      </div>
+      <TweaksPanel
+        open={tweaksOpen} onClose={setTweaksOpen}
+        chartStyle={chartStyle} setChartStyle={setChartStyle}
+        density={density} setDensity={setDensity}
+        accentColor={accentColor} setAccentColor={setAccentColor}
+      />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
 </html>

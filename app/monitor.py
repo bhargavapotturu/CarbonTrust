@@ -23,7 +23,8 @@ from app.config import (
     MONITOR_LOOKBACK_DAYS,
     GEMINI_MODEL,
 )
-from app.ndvi import compute_ndvi  # your existing NDVI function
+import ee
+from app.ndvi import get_mean_ndvi
 from app.db import get_db          # lightweight JSON/SQLite store (see db.py)
 
 logger = logging.getLogger(__name__)
@@ -164,8 +165,9 @@ async def monitor_project(project: dict) -> Optional[dict]:
     logger.info(f"[Monitor] Project {project_id}: fetching NDVI ({current_start} → {current_end})")
 
     try:
-        ndvi_current = await compute_ndvi(bbox, current_start, current_end)
-        ndvi_baseline = await compute_ndvi(bbox, baseline_start, baseline_end)
+        boundary = ee.Geometry.Rectangle(bbox)
+        ndvi_current = get_mean_ndvi(boundary, current_start, current_end)
+        ndvi_baseline = get_mean_ndvi(boundary, baseline_start, baseline_end)
     except Exception as e:
         logger.error(f"[Monitor] GEE error for project {project_id}: {e}")
         return None
